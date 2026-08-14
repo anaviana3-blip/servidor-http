@@ -1,21 +1,51 @@
 import http from 'node:http'
+import { URL } from 'node:url'
 
 const porta = 3000
 
-const server = http.createServer();
+const server = http.createServer()
 
-const requisicao = (req,res) => {
+const requisicao = (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.statusCode = 200
+    const urlObj = new URL(req.url, `http://${req.headers.host}`);
 
-    console.log('Recurso criado! ${req.method} ${req.url}');
-    console.log(new Date().toISOString());
+    if (req.method === 'GET' && urlObj.pathname === '/saudacao') {
+        const nome = urlObj.searchParams.get('nome');
+        return res.end(JSON.stringify({"nome": nome}));
+    }
+    else if (req.method === 'GET' && urlObj.pathname === '/') {
+        return res.end(JSON.stringify({"data": "esta é a pagina inicial"}));
+    }
+    else if (req.method === 'GET' && urlObj.pathname === '/contato') {
+        return res.end(JSON.stringify(
+        {"data":
+        [{"telefone":"67 987654321"}, {"e-mail": "email@gmail.com"}]
+    }))
+    }
+      else if (req.method === 'GET' && urlObj.pathname === '/produtos') {
+        return res.end(JSON.stringify(
+        {"produtos":
+        [{"pera":"5,00"}, {"uva": "10,00"}]
+    }))
+    }
+    else if (req.method === 'GET' && urlObj.pathname === '/status') {
+        return res.end(JSON.stringify(
+        {"status":"ok"} ))}
+    else {res.statusCode = 404
+        res.end("rota não encontrada")
 
-    res.statusCode = 201
-    res.setHeader('Content-Type', 'text/plain', 'charset=utf-8');
-    res.end('Data e hora');
+    };
+
+    return res.end(JSON.stringify({ "chave": "valor" }));
+
+
+    console.log(`Requisição recebida! ${req.method} ${req.url}`);
+    res.end();
 }
 
 server.on('request', requisicao);
 
-server.listen(porta, ()=> {
-    console.log('Servidor ouvindo na porta ${porta}')
-})
+server.listen(porta, () => {
+    console.log(`Servidor ouvindo na porta ${porta}`)
+});
