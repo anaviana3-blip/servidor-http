@@ -5,9 +5,9 @@ const porta = 3000
 const server = http.createServer();
 
 server.on('request', (req, res) => {
-    console.log('servidor funcionando $(req.method) $(req.url)');
+    console.log('recurso criado', '$(req.method) $(req.url)');
 
-    res.statusCode = 200;
+    res.statusCode = 201;
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({"chave":"valor"}));
 });
